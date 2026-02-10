@@ -1,12 +1,13 @@
 
 import { useApi } from "../api/useApi.js";
 import { api } from "../api/api.js";
+import { Link } from "react-router-dom";
 import {Card} from "../components/styled/card.js"
-import { Container } from "../components/styled/container.js";
+import {Container} from "../components/styled/container.js"
 
 
 
-export function Home() {
+export function Venues() {
   const { data, isLoading, isError } = useApi(api);
   const apiresponse = data?.data ?? [];
 
@@ -25,24 +26,18 @@ export function Home() {
     );
   }
  console.log(apiresponse);
-
-   const topRated = [...apiresponse]
-    .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
-    .slice(0, 10);
   return (
-    <div><h2>Top rated venues</h2>
     <Container>
-         {topRated.map((venue) => (
+         {apiresponse.map((venue) => (
         <Card key={venue.id}>
            <img src={`${venue.media[0]?.url }`} alt={`${venue.media[0]?.alt}`}></img>
-          <h2>{venue.name}</h2>
-          <p>Rating: {venue.rating}</p>
-          <p>Price: {venue.price}</p>
+              <Link to={`/venue/${venue.id}`}>
+              <h2>{venue.name}</h2>
+            </Link>
     
         </Card>
       ))}
-      </Container>
-    </div>
+    </Container>
    
   );
 }
