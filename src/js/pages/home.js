@@ -3,6 +3,8 @@ import { useApi } from "../api/useApi.js";
 import { api } from "../api/api.js";
 import {Card} from "../components/styled/card.js"
 import { Container } from "../components/styled/container.js";
+import { Carousel } from "../components/styled/carousel.js";
+import { Hero } from "../components/styled/hero.js";
 
 
 
@@ -30,8 +32,12 @@ export function Home() {
     .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
     .slice(0, 10);
   return (
-    <div><h2>Top rated venues</h2>
-    <Container>
+    <div>
+      <Hero>
+        <div className="text-container"><h2>Find your hidden paradise</h2></div>
+      </Hero>
+      <h2>Top rated venues</h2>
+    <Carousel>
          {topRated.map((venue) => (
         <Card key={venue.id}>
            <img src={`${venue.media[0]?.url }`} alt={`${venue.media[0]?.alt}`}></img>
@@ -41,7 +47,7 @@ export function Home() {
     
         </Card>
       ))}
-      </Container>
+      </Carousel>
     </div>
    
   );

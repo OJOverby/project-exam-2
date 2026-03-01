@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Navigation } from "./styled/navigation.js";
+import { PalmSVG } from "./svg/palm.js";
 
 
 export function Header() {
@@ -7,9 +8,13 @@ export function Header() {
 
   return (
 <Navigation>
+    <div className="navContainer">
+      <div className="titleContainer">
       <Link to="/">
+      <PalmSVG />
         <h1>Holidaze</h1>
       </Link>
+      </div>
       <nav>
         <ul>
           <li>
@@ -25,6 +30,7 @@ export function Header() {
           </li>
         </ul>
       </nav>
+      </div>
     </Navigation>
   );
 }
