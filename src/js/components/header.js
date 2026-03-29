@@ -28,6 +28,11 @@ export function Header() {
               Venues
             </Link>
           </li>
+          <li>
+            <Link to="/registeruser">
+              Register
+            </Link>
+          </li>
         </ul>
       </nav>
       </div>
