@@ -5,8 +5,12 @@ import { apiBookings } from "../api/apiBookings.js";
 import {Container} from "../components/styled/container.js"
 import { VenueCard } from "../components/styled/venueCard.js";
 import { StarSVG } from "../components/svg/star.js";
+import { useAuthStore } from "../store/authStore.js";
+import { Link } from "react-router-dom";
+
 
 export function Venue() {
+    const user = useAuthStore((state) => state.user);
       let params = useParams();
   const productapi = api + "/" + params.id;
   const { data, isLoading, isError } = useApi(productapi);
@@ -83,6 +87,19 @@ function Stars({ rating, max = 5 }) {
     <span className="redx">✖</span>
   )}
 </p>
+
+            {user ? (
+             
+                <Link to="/profile">
+                   <button>Book this venue</button>
+                </Link>
+            ) : (
+              <>
+              <Link to="/login">
+               <button>Log inn to book this venue</button>
+               </Link>
+              </>
+            )}
         </VenueCard>
     </Container>
    
