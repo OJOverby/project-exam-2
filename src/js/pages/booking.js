@@ -6,31 +6,15 @@ import { BookingWrapper } from "../components/styled/bookingWrapper.js";
 import { bookVenue } from "../api/bookVenue.js";
 import { getVenue } from "../api/getVenue.js";
 import { useAuthStore } from "../store/authStore.js";
-
-function normalizeDate(date) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function getDatesInRange(startDate, endDate) {
-  const dates = [];
-  const current = new Date(startDate);
-  const last = new Date(endDate);
-  current.setHours(0, 0, 0, 0);
-  last.setHours(0, 0, 0, 0);
-
-  while (current <= last) {
-    dates.push(new Date(current));
-    current.setDate(current.getDate() + 1);
-  }
-
-  return dates;
-}
+import { getExcludedDates, isRangeAvailable } from "../utils/bookingDates.js";
 
 export function Booking() {
   const navigate = useNavigate();
   const { id } = useParams();
+
   const token = useAuthStore((state) => state.token);
   const user = useAuthStore((state) => state.user);
+
   const [venue, setVenue] = useState(null);
   const [dateFrom, setDateFrom] = useState(null);
   const [dateTo, setDateTo] = useState(null);
@@ -61,11 +45,7 @@ export function Booking() {
   }, [id, token]);
 
   const excludedDates = useMemo(() => {
-    if (!venue?.bookings) return [];
-
-    return venue.bookings.flatMap((booking) =>
-      getDatesInRange(new Date(booking.dateFrom), new Date(booking.dateTo))
-    );
+    return getExcludedDates(venue?.bookings);
   }, [venue]);
 
   const numberOfNights = useMemo(() => {
@@ -79,20 +59,6 @@ export function Booking() {
     const price = Number(venue?.price || 0);
     return price * numberOfNights;
   }, [venue?.price, numberOfNights]);
-
-  function isRangeAvailable(start, end) {
-    if (!start || !end) return false;
-
-    const selectedRange = getDatesInRange(start, end);
-
-    return !selectedRange.some((selectedDate) =>
-      excludedDates.some(
-        (blockedDate) =>
-          normalizeDate(blockedDate).getTime() ===
-          normalizeDate(selectedDate).getTime()
-      )
-    );
-  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -109,7 +75,7 @@ export function Booking() {
       return;
     }
 
-    if (!isRangeAvailable(dateFrom, dateTo)) {
+    if (!isRangeAvailable(dateFrom, dateTo, excludedDates)) {
       setError("Selected dates are not available");
       return;
     }
@@ -125,7 +91,7 @@ export function Booking() {
         dateTo: dateTo.toISOString(),
         guests: Number(guests),
         venueId: id,
-        token
+        token,
       });
 
       console.log("Booking created:", response);
@@ -144,74 +110,75 @@ export function Booking() {
     return <p>Loading venue availability...</p>;
   }
 
-return (
-  <BookingWrapper>
-    <div className="bookingCard">
-      <h2>Book venue</h2>
-
-      {venue && (
-        <div className="venueInfo">
-          <p>
-            <strong>{venue.name}</strong>
-          </p>
-          <p>Max guests: {venue.maxGuests}</p>
-          <p>Price per night: {Number(venue.price)} NOK</p>
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        <label>Check-in</label>
-        <DatePicker
-          selected={dateFrom}
-          onChange={(date) => {
-            setDateFrom(date);
-            setDateTo(null);
-          }}
-          minDate={new Date()}
-          excludeDates={excludedDates}
-          placeholderText="Select check-in date"
-          dateFormat="yyyy-MM-dd"
-        />
-
-        <label>Check-out</label>
-        <DatePicker
-          selected={dateTo}
-          onChange={(date) => setDateTo(date)}
-          minDate={dateFrom || new Date()}
-          excludeDates={excludedDates}
-          placeholderText="Select check-out date"
-          dateFormat="yyyy-MM-dd"
-          disabled={!dateFrom}
-        />
-
-        <label htmlFor="guests">Guests</label>
-        <input
-          id="guests"
-          name="guests"
-          type="number"
-          min="1"
-          max={venue?.maxGuests || 1}
-          value={guests}
-          onChange={(event) => setGuests(event.target.value)}
-          required
-        />
+  return (
+    <BookingWrapper>
+      <div className="bookingCard">
+        <h2>Book venue</h2>
 
         {venue && (
-          <div className="priceBox">
-            <p>Nights: {numberOfNights}</p>
-            <p className="totalPrice">
-              <strong>Total price: {totalPrice} NOK</strong>
+          <div className="venueInfo">
+            <p>
+              <strong>{venue.name}</strong>
             </p>
+            <p>Max guests: {venue.maxGuests}</p>
+            <p>Price per night: {Number(venue.price)} NOK</p>
           </div>
         )}
 
-        <button type="submit" disabled={!dateFrom || !dateTo}>
-          Book now
-        </button>
-      </form>
-      {error && <p className="error">{error}</p>}
-      {success && <p className="success">{success}</p>}
-    </div>
-  </BookingWrapper>
-);
+        <form onSubmit={handleSubmit}>
+          <label>Check-in</label>
+          <DatePicker
+            selected={dateFrom}
+            onChange={(date) => {
+              setDateFrom(date);
+              setDateTo(null);
+            }}
+            minDate={new Date()}
+            excludeDates={excludedDates}
+            placeholderText="Select check-in date"
+            dateFormat="yyyy-MM-dd"
+          />
+
+          <label>Check-out</label>
+          <DatePicker
+            selected={dateTo}
+            onChange={(date) => setDateTo(date)}
+            minDate={dateFrom || new Date()}
+            excludeDates={excludedDates}
+            placeholderText="Select check-out date"
+            dateFormat="yyyy-MM-dd"
+            disabled={!dateFrom}
+          />
+
+          <label htmlFor="guests">Guests</label>
+          <input
+            id="guests"
+            name="guests"
+            type="number"
+            min="1"
+            max={venue?.maxGuests || 1}
+            value={guests}
+            onChange={(event) => setGuests(event.target.value)}
+            required
+          />
+
+          {venue && (
+            <div className="priceBox">
+              <p>Nights: {numberOfNights}</p>
+              <p className="totalPrice">
+                <strong>Total price: {totalPrice} NOK</strong>
+              </p>
+            </div>
+          )}
+
+          <button type="submit" disabled={!dateFrom || !dateTo}>
+            Book now
+          </button>
+        </form>
+
+        {error && <p className="error">{error}</p>}
+        {success && <p className="success">{success}</p>}
+      </div>
+    </BookingWrapper>
+  );
 }
