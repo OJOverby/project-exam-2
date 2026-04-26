@@ -90,7 +90,7 @@ function Stars({ rating, max = 5 }) {
 
             {user ? (
              
-                <Link to="/profile">
+                <Link to={`/booking/${venue?.id}`}>
                    <button>Book this venue</button>
                 </Link>
             ) : (

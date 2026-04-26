@@ -8,6 +8,7 @@ import { RouteNotFound } from "../pages/routenotfound.js";
 import { RegisterUser } from "../pages/registerUser.js";
 import { RegisterVenueManager } from "../pages/registerVenueManager.js";
 import { LoginUser } from "../pages/login.js";
+import { Booking } from "../pages/booking.js";
 
 
 export function AppRoutes() {
@@ -21,6 +22,7 @@ export function AppRoutes() {
         <Route path="login/" element={<LoginUser />} />
         <Route path="registeruser/" element={<RegisterUser />} />
         <Route path="registervenuemanager/" element={<RegisterVenueManager />} />
+        <Route path="booking/:id" element={<Booking />} />
         <Route path="*" element={<RouteNotFound />} />
       </Route>
     </Routes>
