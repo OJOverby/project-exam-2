@@ -1,1 +1,1 @@
-export const apiBookings = 'https://v2.api.noroff.dev/holidaze/bookings'
+export const apiBookings = "https://v2.api.noroff.dev/holidaze/bookings";

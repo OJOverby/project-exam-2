@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
 import { useApi } from "../api/useApi.js";
 import { api } from "../api/api.js";
 import { Container } from "../components/styled/container.js";
@@ -46,7 +45,7 @@ export function Venue() {
 
   return (
     <Container>
-      <VenueCard key={venue?.id}>
+      <VenueCard>
         {venue?.media?.[0]?.url && (
           <img
             src={venue.media[0].url}
@@ -54,78 +53,84 @@ export function Venue() {
           />
         )}
 
-        <h2>{venue?.name}</h2>
+        <div className="content">
+          <h2>{venue?.name}</h2>
 
-        <p>
-          {venue?.location?.city}, {venue?.location?.country}
-        </p>
+          <p className="location">
+            {venue?.location?.city}, {venue?.location?.country}
+          </p>
 
-        <p>
-          <Stars rating={venue?.rating} />
-        </p>
+          <p>
+            <Stars rating={venue?.rating} />
+          </p>
 
-        <p>{venue?.description}</p>
+          <p className="price">{venue?.price} NOK / night</p>
 
-        <p>Price: {venue?.price} NOK</p>
+          <p className="description">{venue?.description}</p>
 
-        <h3>Facilities:</h3>
+          <h3>Facilities</h3>
 
-        <p>
-          Parking:
-          {venue?.meta?.parking ? (
-            <span className="greencheckmark">✔</span>
-          ) : (
-            <span className="redx">✖</span>
-          )}
-        </p>
+          <div className="facilities">
+            <div className="facility">
+              <span>Parking</span>
+              {venue?.meta?.parking ? (
+                <span className="greencheckmark">✔</span>
+              ) : (
+                <span className="redx">✖</span>
+              )}
+            </div>
 
-        <p>
-          Breakfast:
-          {venue?.meta?.breakfast ? (
-            <span className="greencheckmark">✔</span>
-          ) : (
-            <span className="redx">✖</span>
-          )}
-        </p>
+            <div className="facility">
+              <span>Breakfast</span>
+              {venue?.meta?.breakfast ? (
+                <span className="greencheckmark">✔</span>
+              ) : (
+                <span className="redx">✖</span>
+              )}
+            </div>
 
-        <p>
-          Wifi:
-          {venue?.meta?.wifi ? (
-            <span className="greencheckmark">✔</span>
-          ) : (
-            <span className="redx">✖</span>
-          )}
-        </p>
+            <div className="facility">
+              <span>Wifi</span>
+              {venue?.meta?.wifi ? (
+                <span className="greencheckmark">✔</span>
+              ) : (
+                <span className="redx">✖</span>
+              )}
+            </div>
 
-        <p>
-          Pets allowed:
-          {venue?.meta?.pets ? (
-            <span className="greencheckmark">✔</span>
-          ) : (
-            <span className="redx">✖</span>
-          )}
-        </p>
+            <div className="facility">
+              <span>Pets</span>
+              {venue?.meta?.pets ? (
+                <span className="greencheckmark">✔</span>
+              ) : (
+                <span className="redx">✖</span>
+              )}
+            </div>
+          </div>
 
-        <div className="availabilityCalendar">
-          <h3>Available dates</h3>
+          <div className="calendar">
+            <h3>Available dates</h3>
 
-          <DatePicker
-            inline
-            minDate={new Date()}
-            excludeDates={excludedDates}
-            disabledKeyboardNavigation
-          />
+            <DatePicker
+              inline
+              minDate={new Date()}
+              excludeDates={excludedDates}
+              disabledKeyboardNavigation
+            />
+          </div>
+
+          <div className="cta">
+            {user ? (
+              <Link to={`/booking/${venue?.id}`}>
+                <button>Book this venue</button>
+              </Link>
+            ) : (
+              <Link to="/login">
+                <button>Log in to book</button>
+              </Link>
+            )}
+          </div>
         </div>
-
-        {user ? (
-          <Link to={`/booking/${venue?.id}`}>
-            <button>Book this venue</button>
-          </Link>
-        ) : (
-          <Link to="/login">
-            <button>Log in to book this venue</button>
-          </Link>
-        )}
       </VenueCard>
     </Container>
   );

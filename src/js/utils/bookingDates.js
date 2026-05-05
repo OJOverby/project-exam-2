@@ -20,7 +20,7 @@ export function getDatesInRange(startDate, endDate) {
 
 export function getExcludedDates(bookings = []) {
   return bookings.flatMap((booking) =>
-    getDatesInRange(new Date(booking.dateFrom), new Date(booking.dateTo))
+    getDatesInRange(new Date(booking.dateFrom), new Date(booking.dateTo)),
   );
 }
 
@@ -33,7 +33,7 @@ export function isRangeAvailable(start, end, excludedDates = []) {
     excludedDates.some(
       (blockedDate) =>
         normalizeDate(blockedDate).getTime() ===
-        normalizeDate(selectedDate).getTime()
-    )
+        normalizeDate(selectedDate).getTime(),
+    ),
   );
 }

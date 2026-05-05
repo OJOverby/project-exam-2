@@ -5,14 +5,14 @@ export async function Register({
   bio = "",
   avatar = null,
   banner = null,
-  venueManager = false
+  venueManager = false,
 }) {
   const body = {
     name,
     email,
     password,
     bio,
-    venueManager
+    venueManager,
   };
 
   if (avatar && avatar.url) {
@@ -28,9 +28,9 @@ export async function Register({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Noroff-API-Key": "6210f1ec-be4c-46be-93de-91c4626474fe"
+        "X-Noroff-API-Key": "6210f1ec-be4c-46be-93de-91c4626474fe",
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     });
 
     const data = await response.json();

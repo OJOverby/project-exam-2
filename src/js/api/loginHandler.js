@@ -7,17 +7,17 @@ export function loginHandler(navigate) {
     const form = event.target;
     const user = {
       email: form.email.value,
-      password: form.password.value
+      password: form.password.value,
     };
 
     try {
       const response = await Login(user);
 
       console.log("Logged in:", response);
+      console.log("venueManager:", response.data.venueManager);
 
       useAuthStore.getState().setAuth(response.data);
       navigate("/");
-
     } catch (error) {
       console.error(error);
     }

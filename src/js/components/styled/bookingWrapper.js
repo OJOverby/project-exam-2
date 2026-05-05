@@ -10,7 +10,7 @@ export const BookingWrapper = styled.section`
     padding: 2rem;
     border-radius: 10px;
     background: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   }
 
   h2 {

@@ -1,11 +1,11 @@
-import { registerHandler } from "../api/registerHandler.js";
-import { FormWrapper } from "../components/styled/formWrapper.js";
+import { registerHandler } from "../../api/registerHandler.js";
+import { FormWrapper } from "../../components/styled/formWrapper.js";
 
-export function RegisterUser() {
+export function RegisterManager() {
   return (
     <FormWrapper>
-      <form onSubmit={registerHandler(false)}>
-        <h2>Register User</h2>
+      <form onSubmit={registerHandler(true)}>
+        <h2>Register As Venue Manager</h2>
 
         <input name="username" type="text" placeholder="Username" required />
         <input name="email" type="email" placeholder="Email" required />
@@ -20,7 +20,7 @@ export function RegisterUser() {
         <input name="avatarUrl" type="url" placeholder="Avatar URL" />
         <input name="avatarAlt" type="text" placeholder="Avatar alt text" />
 
-        <button type="submit">Register User</button>
+        <button type="submit">Register Venue Manager</button>
       </form>
     </FormWrapper>
   );

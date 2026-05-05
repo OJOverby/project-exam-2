@@ -172,19 +172,27 @@ export function Venues() {
               src={venue.media?.[0]?.url || "/images/placeholder.jpeg"}
               alt={venue.media?.[0]?.alt || "Venue image"}
             />
+
             <Link to={`/venue/${venue.id}`}>
               <h2>{venue.name}</h2>
             </Link>
-            <p>
+
+            <p className="location">
               {venue.location?.city}, {venue.location?.country}
             </p>
-            <p>
+
+            <p className="rating">
               <Stars rating={venue.rating} />
             </p>
-            <div>
-              <h2>{venue.price},-</h2>
+
+            <div className="priceRow">
+              <div className="price">
+                <strong>{venue.price},-</strong>
+                <span>per night</span>
+              </div>
+
               <Link to={`/venue/${venue.id}`}>
-                <button>View</button>
+                <button>View more</button>
               </Link>
             </div>
           </Card>

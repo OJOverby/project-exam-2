@@ -1,7 +1,6 @@
 import styled from "styled-components";
 
 export const FormWrapper = styled.div`
-
   display: flex;
   justify-content: center;
   margin-top: 5rem;
@@ -14,7 +13,7 @@ export const FormWrapper = styled.div`
     padding: 2rem;
     border-radius: 10px;
     background: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   }
 
   h2 {
@@ -53,5 +52,25 @@ export const FormWrapper = styled.div`
 
   button:hover {
     background: #3a64cc;
+  }
+
+  .authLinks {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  .authLinks p {
+    margin: 0.3rem 0;
+  }
+
+  .authLinks a {
+    color: #4c7cf3;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .authLinks a:hover {
+    text-decoration: underline;
   }
 `;

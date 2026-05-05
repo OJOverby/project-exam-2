@@ -13,9 +13,9 @@ export function registerHandler(venueManager) {
       bio: form.bio.value,
       avatar: {
         url: form.avatarUrl.value,
-        alt: form.avatarAlt.value
+        alt: form.avatarAlt.value,
       },
-      venueManager
+      venueManager,
     };
 
     try {

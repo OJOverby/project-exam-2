@@ -7,9 +7,9 @@ export async function getUserBookings({ name, token }) {
         headers: {
           "Content-Type": "application/json",
           "X-Noroff-API-Key": "6210f1ec-be4c-46be-93de-91c4626474fe",
-          Authorization: `Bearer ${token}`
-        }
-      }
+          Authorization: `Bearer ${token}`,
+        },
+      },
     );
 
     const data = await response.json();

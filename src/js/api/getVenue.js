@@ -5,9 +5,9 @@ export async function getVenue(id) {
       {
         headers: {
           "Content-Type": "application/json",
-          "X-Noroff-API-Key": "6210f1ec-be4c-46be-93de-91c4626474fe"
-        }
-      }
+          "X-Noroff-API-Key": "6210f1ec-be4c-46be-93de-91c4626474fe",
+        },
+      },
     );
 
     const data = await response.json();

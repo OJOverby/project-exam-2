@@ -6,13 +6,18 @@ export const useAuthStore = create((set) => ({
 
   setAuth: (userData) =>
     set({
-      user: userData,
-      token: userData.accessToken
+      user: {
+        name: userData.name,
+        email: userData.email,
+        avatar: userData.avatar,
+        venueManager: userData.venueManager,
+      },
+      token: userData.accessToken,
     }),
 
   clearAuth: () =>
     set({
       user: null,
-      token: null
-    })
+      token: null,
+    }),
 }));
