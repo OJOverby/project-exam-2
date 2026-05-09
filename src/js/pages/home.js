@@ -80,7 +80,7 @@ function VenueCard({ venue }) {
 export function Home() {
   const navigate = useNavigate();
   const { data, isLoading, isError } = useApi(api);
-  const venues = data?.data ?? [];
+  const venues = useMemo(() => data?.data ?? [], [data]);
   const [search, setSearch] = useState("");
 
   const topRated = useMemo(() => {

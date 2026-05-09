@@ -36,7 +36,7 @@ const AMENITIES = ["breakfast", "wifi", "pets", "parking"];
 
 export function Venues() {
   const { data, isLoading, isError } = useApi(api);
-  const venues = data?.data ?? [];
+  const venues = useMemo(() => data?.data ?? [], [data]);
 
   const [minRating, setMinRating] = useState(0);
   const [priceRange, setPriceRange] = useState([PRICE_MIN, PRICE_MAX]);
