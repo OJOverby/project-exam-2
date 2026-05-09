@@ -78,7 +78,7 @@ export function Venue() {
 
         <div className="content">
           <div className="venueHeader">
-            <div>
+            <div className="venueTitle">
               <h1>{venue?.name}</h1>
 
               <p className="location">

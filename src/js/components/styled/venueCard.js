@@ -57,6 +57,16 @@ export const VenueCard = styled.article`
     align-items: flex-start;
   }
 
+  .venueTitle {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .venueTitle h1 {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
   h1,
   h2 {
     margin: 0;
