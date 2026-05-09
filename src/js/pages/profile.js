@@ -1,17 +1,30 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/authStore.js";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import { getUserBookings } from "../api/getUserBookings.js";
 import { updateAvatar } from "../api/updateAvatar.js";
 import { ProfileWrapper } from "../components/styled/profileWrapper.js";
+
+function formatDate(date) {
+  return new Date(date).toLocaleDateString();
+}
+
+function getNights(dateFrom, dateTo) {
+  return Math.max(
+    1,
+    Math.ceil((new Date(dateTo) - new Date(dateFrom)) / (1000 * 60 * 60 * 24)),
+  );
+}
 
 export function Profile() {
   const user = useAuthStore((state) => state.user);
   const token = useAuthStore((state) => state.token);
   const clearAuth = useAuthStore((state) => state.clearAuth);
+  const setAuth = useAuthStore((state) => state.setAuth);
 
   const [bookings, setBookings] = useState([]);
-  const [error, setError] = useState("");
+  const [pageError, setPageError] = useState("");
+  const [avatarError, setAvatarError] = useState("");
   const [loading, setLoading] = useState(true);
 
   const [avatarModalOpen, setAvatarModalOpen] = useState(false);
@@ -27,6 +40,7 @@ export function Profile() {
     async function loadBookings() {
       try {
         setLoading(true);
+        setPageError("");
 
         const data = await getUserBookings({
           name: user.name,
@@ -35,7 +49,7 @@ export function Profile() {
 
         setBookings(data);
       } catch (error) {
-        setError(error.message);
+        setPageError(error.message);
       } finally {
         setLoading(false);
       }
@@ -54,7 +68,7 @@ export function Profile() {
 
   async function handleAvatarUpdate(event) {
     event.preventDefault();
-    setError("");
+    setAvatarError("");
 
     try {
       const updatedUser = await updateAvatar({
@@ -66,7 +80,7 @@ export function Profile() {
         token,
       });
 
-      useAuthStore.getState().setAuth({
+      setAuth({
         ...user,
         avatar: updatedUser.avatar,
         accessToken: token,
@@ -74,23 +88,35 @@ export function Profile() {
 
       setAvatarModalOpen(false);
     } catch (error) {
-      setError(error.message);
+      setAvatarError(error.message);
     }
   }
 
   return (
     <ProfileWrapper>
       <div className="profileCard">
-        {user.avatar?.url && (
+        <button
+          className="button ghost profileLogout"
+          type="button"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
+        {user.avatar?.url ? (
           <img
             className="profileAvatar"
             src={user.avatar.url}
             alt={user.avatar.alt || "Profile picture"}
           />
+        ) : (
+          <div className="avatarFallback">
+            {user.name?.charAt(0).toUpperCase()}
+          </div>
         )}
 
         <div className="profileInfo">
-          <h2>My Profile</h2>
+          <p className="eyebrow">Customer profile</p>
+          <h1>My Profile</h1>
 
           <p>
             <strong>Name:</strong> {user.name}
@@ -100,88 +126,154 @@ export function Profile() {
             <strong>Email:</strong> {user.email}
           </p>
 
-          <button type="button" onClick={() => setAvatarModalOpen(true)}>
-            Change avatar
-          </button>
-
-          <button type="button" onClick={handleLogout}>
-            Logout
-          </button>
+          <div className="profileActions">
+            <button
+              className="button secondary"
+              type="button"
+              onClick={() => setAvatarModalOpen(true)}
+            >
+              Change avatar
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="bookingsHeader">
-        <h3>My bookings</h3>
+      <div className="sectionHeader">
+        <div>
+          <h2>My bookings</h2>
+          <p>Manage your upcoming and previous stays.</p>
+        </div>
+
+        <Link className="buttonLink primary" to="/venues">
+          Browse venues
+        </Link>
       </div>
 
       {loading && <p className="message">Loading bookings...</p>}
 
-      {error && <p className="message error">{error}</p>}
+      {pageError && <p className="message error">{pageError}</p>}
 
       {!loading && bookings.length === 0 && (
-        <p className="message">You have no bookings yet.</p>
+        <div className="emptyState">
+          <h3>No bookings yet</h3>
+          <p>Start exploring venues and plan your next stay.</p>
+          <Link className="buttonLink primary" to="/venues">
+            Browse venues
+          </Link>
+        </div>
       )}
 
       {!loading && bookings.length > 0 && (
         <div className="bookingsGrid">
-          {bookings.map((booking) => (
-            <div className="bookingCard" key={booking.id}>
-              <h4>{booking.venue?.name || "Venue"}</h4>
+          {bookings.map((booking) => {
+            const nights = getNights(booking.dateFrom, booking.dateTo);
+            const total =
+              booking.venue?.price && nights
+                ? booking.venue.price * nights
+                : null;
 
-              <p>
-                <strong>From:</strong>{" "}
-                {new Date(booking.dateFrom).toLocaleDateString()}
-              </p>
+            const isPast = new Date(booking.dateTo) < new Date();
 
-              <p>
-                <strong>To:</strong>{" "}
-                {new Date(booking.dateTo).toLocaleDateString()}
-              </p>
+            return (
+              <article className="bookingCard" key={booking.id}>
+                <div className="cardHeader">
+                  <div>
+                    <h3>{booking.venue?.name || "Venue"}</h3>
+                    <span className={isPast ? "badge muted" : "badge"}>
+                      {isPast ? "Past stay" : "Upcoming"}
+                    </span>
+                  </div>
+                </div>
 
-              <p>
-                <strong>Guests:</strong> {booking.guests}
-              </p>
+                <div className="detailsList">
+                  <div className="detailRow">
+                    <span>From</span>
+                    <strong>{formatDate(booking.dateFrom)}</strong>
+                  </div>
 
-              {booking.venue?.price && (
-                <p>
-                  <strong>Price per night:</strong> {booking.venue.price} NOK
-                </p>
-              )}
-            </div>
-          ))}
+                  <div className="detailRow">
+                    <span>To</span>
+                    <strong>{formatDate(booking.dateTo)}</strong>
+                  </div>
+
+                  <div className="detailRow">
+                    <span>Guests</span>
+                    <strong>{booking.guests}</strong>
+                  </div>
+
+                  <div className="detailRow">
+                    <span>Nights</span>
+                    <strong>{nights}</strong>
+                  </div>
+
+                  {booking.venue?.price && (
+                    <div className="detailRow">
+                      <span>Per night</span>
+                      <strong>{booking.venue.price} NOK</strong>
+                    </div>
+                  )}
+
+                  {total && (
+                    <div className="detailRow total">
+                      <span>Total</span>
+                      <strong>{total} NOK</strong>
+                    </div>
+                  )}
+                </div>
+
+                {booking.venue?.id && (
+                  <Link
+                    className="buttonLink secondary fullWidth"
+                    to={`/venue/${booking.venue.id}`}
+                  >
+                    View venue
+                  </Link>
+                )}
+              </article>
+            );
+          })}
         </div>
       )}
 
       {avatarModalOpen && (
         <div className="modalOverlay">
-          <div className="modal">
+          <div className="modal" role="dialog" aria-modal="true">
             <button
               className="closeButton"
               type="button"
+              aria-label="Close avatar modal"
               onClick={() => setAvatarModalOpen(false)}
             >
               ×
             </button>
 
-            <h3>Update avatar</h3>
+            <h2>Update avatar</h2>
+
+            {avatarError && <p className="message error">{avatarError}</p>}
 
             <form onSubmit={handleAvatarUpdate}>
-              <input
-                type="url"
-                placeholder="Avatar image URL"
-                value={avatarUrl}
-                onChange={(event) => setAvatarUrl(event.target.value)}
-                required
-              />
+              <label>
+                Avatar image URL
+                <input
+                  type="url"
+                  value={avatarUrl}
+                  onChange={(event) => setAvatarUrl(event.target.value)}
+                  required
+                />
+              </label>
 
-              <input
-                type="text"
-                placeholder="Avatar alt text"
-                value={avatarAlt}
-                onChange={(event) => setAvatarAlt(event.target.value)}
-              />
+              <label>
+                Avatar alt text
+                <input
+                  type="text"
+                  value={avatarAlt}
+                  onChange={(event) => setAvatarAlt(event.target.value)}
+                />
+              </label>
 
-              <button type="submit">Save avatar</button>
+              <button className="button primary" type="submit">
+                Save avatar
+              </button>
             </form>
           </div>
         </div>

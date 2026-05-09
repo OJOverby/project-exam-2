@@ -1,19 +1,19 @@
 import styled from "styled-components";
 
-export const Card = styled.div`
+export const Card = styled.article`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: 18px;
   background: white;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.12);
   }
 
   img {
@@ -22,18 +22,31 @@ export const Card = styled.div`
     object-fit: cover;
   }
 
-  a {
+  .cardContent {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .titleLink {
     color: inherit;
     text-decoration: none;
   }
 
+  .titleLink:hover {
+    color: #4c7cf3;
+  }
+
   h2 {
     font-size: 1.2rem;
-    margin: 1rem 1rem 0.4rem 1rem;
+    line-height: 1.25;
+    margin: 0;
+    color: #111;
   }
 
   p {
-    margin: 0.25rem 1rem;
+    margin: 0;
     color: #555;
   }
 
@@ -41,8 +54,9 @@ export const Card = styled.div`
     font-size: 0.95rem;
   }
 
-  .rating {
-    margin-top: 0.5rem;
+  .stars {
+    display: inline-flex;
+    gap: 0.25rem;
   }
 
   .priceRow {
@@ -71,17 +85,31 @@ export const Card = styled.div`
     color: #777;
   }
 
-  button {
-    padding: 0.7rem 1rem;
+  .buttonLink {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+    padding: 0.75rem 1rem;
     border-radius: 999px;
-    border: none;
     background: #4c7cf3;
     color: white;
     font-weight: 700;
-    cursor: pointer;
+    text-decoration: none;
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
   }
 
-  button:hover {
+  .buttonLink:hover {
     background: #3a64cc;
+    transform: translateY(-1px);
+  }
+
+  .buttonLink:focus-visible,
+  .titleLink:focus-visible {
+    outline: 3px solid #b8c7ff;
+    outline-offset: 3px;
+    border-radius: 8px;
   }
 `;

@@ -9,12 +9,13 @@ import { VenueCard } from "../components/styled/venueCard.js";
 import { StarSVG } from "../components/svg/star.js";
 import { useAuthStore } from "../store/authStore.js";
 import { getExcludedDates } from "../utils/bookingDates.js";
+import { Loading } from "../components/styled/loading.js";
 
 function Stars({ rating, max = 5 }) {
   const filled = Math.round(Number(rating) || 0);
 
   return (
-    <span style={{ display: "inline-flex", gap: 4 }}>
+    <span className="stars" aria-label={`${filled} out of ${max} stars`}>
       {Array.from({ length: max }).map((_, i) => (
         <StarSVG key={i} fillPercent={i < filled ? 100 : 0} size={18} />
       ))}
@@ -26,90 +27,90 @@ export function Venue() {
   const user = useAuthStore((state) => state.user);
   const params = useParams();
 
-  const productapi = `${api}/${params.id}?_bookings=true`;
-  const { data, isLoading, isError } = useApi(productapi);
+  const venueApiUrl = `${api}/${params.id}?_bookings=true`;
+  const { data, isLoading, isError } = useApi(venueApiUrl);
 
   const venue = data?.data;
 
   const excludedDates = useMemo(() => {
     return getExcludedDates(venue?.bookings);
-  }, [venue]);
+  }, [venue?.bookings]);
+
+  const facilities = [
+    ["Parking", venue?.meta?.parking],
+    ["Breakfast", venue?.meta?.breakfast],
+    ["Wifi", venue?.meta?.wifi],
+    ["Pets", venue?.meta?.pets],
+  ];
 
   if (isLoading) {
-    return <div>Loading placeholder</div>;
+    return (
+      <Container>
+        <Loading aria-label="Loading venues" role="status">
+          {Array.from({ length: 20 }).map((_, index) => (
+            <span key={index} style={{ "--i": index + 1 }} aria-hidden="true" />
+          ))}
+          <div className="plane" aria-hidden="true" />
+        </Loading>
+      </Container>
+    );
   }
 
   if (isError) {
-    return <div>Error message placeholder</div>;
+    return (
+      <Container>
+        <div>Something went wrong while loading this venue.</div>
+      </Container>
+    );
   }
 
   return (
     <Container>
       <VenueCard>
-        {venue?.media?.[0]?.url && (
+        {venue?.media?.[0]?.url ? (
           <img
             src={venue.media[0].url}
             alt={venue.media[0].alt || venue.name}
           />
+        ) : (
+          <div className="imageFallback">No image available</div>
         )}
 
         <div className="content">
-          <h2>{venue?.name}</h2>
+          <div className="venueHeader">
+            <div>
+              <h1>{venue?.name}</h1>
 
-          <p className="location">
-            {venue?.location?.city}, {venue?.location?.country}
-          </p>
+              <p className="location">
+                {venue?.location?.city}, {venue?.location?.country}
+              </p>
+            </div>
 
-          <p>
             <Stars rating={venue?.rating} />
-          </p>
-
-          <p className="price">{venue?.price} NOK / night</p>
+          </div>
 
           <p className="description">{venue?.description}</p>
 
-          <h3>Facilities</h3>
+          <section>
+            <h2>Facilities</h2>
 
-          <div className="facilities">
-            <div className="facility">
-              <span>Parking</span>
-              {venue?.meta?.parking ? (
-                <span className="greencheckmark">✔</span>
-              ) : (
-                <span className="redx">✖</span>
-              )}
+            <div className="facilities">
+              {facilities.map(([label, available]) => (
+                <div className="facility" key={label}>
+                  <span>{label}</span>
+                  <span className={available ? "available" : "unavailable"}>
+                    {available ? "Included" : "Not available"}
+                  </span>
+                </div>
+              ))}
             </div>
+          </section>
 
-            <div className="facility">
-              <span>Breakfast</span>
-              {venue?.meta?.breakfast ? (
-                <span className="greencheckmark">✔</span>
-              ) : (
-                <span className="redx">✖</span>
-              )}
-            </div>
-
-            <div className="facility">
-              <span>Wifi</span>
-              {venue?.meta?.wifi ? (
-                <span className="greencheckmark">✔</span>
-              ) : (
-                <span className="redx">✖</span>
-              )}
-            </div>
-
-            <div className="facility">
-              <span>Pets</span>
-              {venue?.meta?.pets ? (
-                <span className="greencheckmark">✔</span>
-              ) : (
-                <span className="redx">✖</span>
-              )}
-            </div>
-          </div>
-
-          <div className="calendar">
-            <h3>Available dates</h3>
+          <section className="calendar">
+            <h2>Available dates</h2>
+            <p className="calendarHelp">
+              Dates with a line through them are already booked.
+            </p>
 
             <DatePicker
               inline
@@ -117,16 +118,18 @@ export function Venue() {
               excludeDates={excludedDates}
               disabledKeyboardNavigation
             />
-          </div>
+          </section>
 
-          <div className="cta">
+          <div className="bookingPanel">
+            <p className="price">{venue?.price} NOK / night</p>
+
             {user ? (
-              <Link to={`/booking/${venue?.id}`}>
-                <button>Book this venue</button>
+              <Link className="buttonLink" to={`/booking/${venue?.id}`}>
+                Book this venue
               </Link>
             ) : (
-              <Link to="/login">
-                <button>Log in to book</button>
+              <Link className="buttonLink" to="/login">
+                Log in to book
               </Link>
             )}
           </div>
