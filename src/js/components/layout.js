@@ -4,9 +4,11 @@ import { Footer } from "./footer.js";
 
 export function Layout() {
   return (
-    <div>
+    <div className="appShell">
       <Header />
-      <Outlet />
+      <main className="pageContent">
+        <Outlet />
+      </main>
       <Footer />
     </div>
   );
