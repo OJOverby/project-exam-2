@@ -225,7 +225,7 @@ export function ManagerProfile() {
 
         <div className="statCard">
           <span>Estimated revenue</span>
-          <strong>{stats.estimatedRevenue} NOK</strong>
+          <strong>{stats.estimatedRevenue}</strong>
         </div>
       </div>
 

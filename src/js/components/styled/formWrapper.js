@@ -10,7 +10,8 @@ export const FormWrapper = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    width: 360px;
+    width: min(100%, 360px);
+    box-sizing: border-box;
     padding: 2rem;
     border-radius: 18px;
     background: white;
@@ -20,6 +21,17 @@ export const FormWrapper = styled.div`
   h2 {
     text-align: center;
     margin-bottom: 0.5rem;
+  }
+
+  .fieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  label {
+    color: #222;
+    font-weight: 700;
   }
 
   input,
@@ -35,6 +47,14 @@ export const FormWrapper = styled.div`
   textarea:focus {
     outline: none;
     border-color: #4c7cf3;
+  }
+
+  input:focus-visible,
+  textarea:focus-visible,
+  button:focus-visible,
+  .authLinks a:focus-visible {
+    outline: 3px solid #b8c7ff;
+    outline-offset: 3px;
   }
 
   textarea {
@@ -56,6 +76,11 @@ export const FormWrapper = styled.div`
     background: #3a64cc;
   }
 
+  button:disabled {
+    background: #c6cbd6;
+    cursor: not-allowed;
+  }
+
   .authLinks {
     margin-top: 1rem;
     text-align: center;
@@ -74,6 +99,15 @@ export const FormWrapper = styled.div`
 
   .authLinks a:hover {
     text-decoration: underline;
+  }
+
+  .errorMessage {
+    margin: 0;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    background: #fff1f1;
+    color: #a42424;
+    font-weight: 700;
   }
 
   &.venueFormPage {
@@ -290,12 +324,7 @@ export const FormWrapper = styled.div`
   }
 
   &.venueFormPage .errorMessage {
-    margin: 0;
     padding: 1rem;
-    border-radius: 14px;
-    background: #fff1f1;
-    color: #a42424;
-    font-weight: 700;
   }
 
   &.venueFormPage .formActions {
@@ -345,8 +374,6 @@ export const FormWrapper = styled.div`
   }
 
   &.venueFormPage button:disabled {
-    background: #c6cbd6;
-    cursor: not-allowed;
     transform: none;
   }
 

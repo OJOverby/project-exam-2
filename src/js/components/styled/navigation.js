@@ -124,6 +124,11 @@ export const Navigation = styled.header`
     object-fit: cover;
   }
 
+  .profileText {
+    display: none;
+    font-weight: 700;
+  }
+
   .searchForm {
     display: flex;
     align-items: center;
@@ -322,6 +327,14 @@ export const Navigation = styled.header`
       justify-content: flex-start;
       padding: 0.85rem 1rem;
       border-radius: 12px;
+    }
+
+    .profileAvatar {
+      display: none;
+    }
+
+    .profileText {
+      display: inline;
     }
 
     nav a::after {

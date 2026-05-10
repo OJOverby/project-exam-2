@@ -1,10 +1,12 @@
+import { API_KEY } from "./api-key";
+
 export async function deleteVenue({ id, token }) {
   const response = await fetch(
     `https://v2.api.noroff.dev/holidaze/venues/${id}`,
     {
       method: "DELETE",
       headers: {
-        "X-Noroff-API-Key": "6210f1ec-be4c-46be-93de-91c4626474fe",
+        API_KEY,
         Authorization: `Bearer ${token}`,
       },
     },

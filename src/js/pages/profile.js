@@ -209,14 +209,14 @@ export function Profile() {
                   {booking.venue?.price && (
                     <div className="detailRow">
                       <span>Per night</span>
-                      <strong>{booking.venue.price} NOK</strong>
+                      <strong>{booking.venue.price}</strong>
                     </div>
                   )}
 
                   {total && (
                     <div className="detailRow total">
                       <span>Total</span>
-                      <strong>{total} NOK</strong>
+                      <strong>{total}</strong>
                     </div>
                   )}
                 </div>

@@ -1,12 +1,18 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useApi } from "../api/useApi.js";
 import { api } from "../api/api.js";
 import { Card } from "../components/styled/card.js";
-import { Carousel } from "../components/styled/carousel.js";
+import {
+  Carousel,
+  CarouselButton,
+  CarouselWrapper,
+} from "../components/styled/carousel.js";
 import { Hero } from "../components/styled/hero.js";
 import { HomeSection } from "../components/styled/homeSection.js";
 import { StarSVG } from "../components/svg/star.js";
+import { EmptyState } from "../components/styled/venuesLayout.js";
+import { Loading } from "../components/styled/loading.js";
 
 function Stars({ rating, max = 5 }) {
   const filled = Math.round(Number(rating) || 0);
@@ -77,6 +83,49 @@ function VenueCard({ venue }) {
   );
 }
 
+function VenueCarousel({ venues, label }) {
+  const carouselRef = useRef(null);
+
+  function scrollCarousel(direction) {
+    if (!carouselRef.current) return;
+
+    const scrollAmount = 324;
+
+    carouselRef.current.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+  }
+
+  return (
+    <CarouselWrapper>
+      <Carousel ref={carouselRef} aria-label={label}>
+        {venues.map((venue) => (
+          <VenueCard key={venue.id} venue={venue} />
+        ))}
+      </Carousel>
+
+      <CarouselButton
+        className="left"
+        type="button"
+        aria-label={`Scroll ${label} left`}
+        onClick={() => scrollCarousel("left")}
+      >
+        ‹
+      </CarouselButton>
+
+      <CarouselButton
+        className="right"
+        type="button"
+        aria-label={`Scroll ${label} right`}
+        onClick={() => scrollCarousel("right")}
+      >
+        ›
+      </CarouselButton>
+    </CarouselWrapper>
+  );
+}
+
 export function Home() {
   const navigate = useNavigate();
   const { data, isLoading, isError } = useApi(api);
@@ -107,7 +156,20 @@ export function Home() {
 
   if (isLoading) {
     return (
-      <HomeSection className="statusMessage">Loading venues...</HomeSection>
+      <HomeSection className="statusMessage">
+        <EmptyState>
+          <Loading aria-label="Loading venues" role="status">
+            {Array.from({ length: 20 }).map((_, index) => (
+              <span
+                key={index}
+                style={{ "--i": index + 1 }}
+                aria-hidden="true"
+              />
+            ))}
+            <div className="plane" aria-hidden="true" />
+          </Loading>
+        </EmptyState>
+      </HomeSection>
     );
   }
 
@@ -198,11 +260,7 @@ export function Home() {
         </div>
 
         {topRated.length > 0 ? (
-          <Carousel>
-            {topRated.map((venue) => (
-              <VenueCard key={venue.id} venue={venue} />
-            ))}
-          </Carousel>
+          <VenueCarousel venues={topRated} label="top rated venues" />
         ) : (
           <div className="emptyState">No venues available yet.</div>
         )}
@@ -234,11 +292,7 @@ export function Home() {
         </div>
 
         {recentlyAdded.length > 0 ? (
-          <Carousel>
-            {recentlyAdded.map((venue) => (
-              <VenueCard key={venue.id} venue={venue} />
-            ))}
-          </Carousel>
+          <VenueCarousel venues={recentlyAdded} label="recently added venues" />
         ) : (
           <div className="emptyState">No recent venues available yet.</div>
         )}

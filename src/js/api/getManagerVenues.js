@@ -1,3 +1,5 @@
+import { API_KEY } from "./api-key";
+
 export async function getManagerVenues({ name, token }) {
   const response = await fetch(
     `https://v2.api.noroff.dev/holidaze/profiles/${name}/venues?_bookings=true`,
@@ -5,7 +7,7 @@ export async function getManagerVenues({ name, token }) {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "X-Noroff-API-Key": "6210f1ec-be4c-46be-93de-91c4626474fe",
+        "X-Noroff-API-Key": API_KEY,
         Authorization: `Bearer ${token}`,
       },
     },

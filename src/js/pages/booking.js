@@ -269,12 +269,12 @@ export function Booking() {
 
               <div className="summaryRow">
                 <span>Price per night</span>
-                <strong>{Number(venue?.price || 0)} NOK</strong>
+                <strong>{Number(venue?.price || 0)}</strong>
               </div>
 
               <div className="summaryRow total">
                 <span>Total</span>
-                <strong>{totalPrice} NOK</strong>
+                <strong>{totalPrice}</strong>
               </div>
             </div>
           </div>

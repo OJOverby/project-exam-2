@@ -1,3 +1,5 @@
+import { API_KEY } from "./api-key";
+
 export async function updateAvatar({ name, avatar, token }) {
   try {
     const response = await fetch(
@@ -6,7 +8,7 @@ export async function updateAvatar({ name, avatar, token }) {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "X-Noroff-API-Key": "6210f1ec-be4c-46be-93de-91c4626474fe",
+          "X-Noroff-API-Key": API_KEY,
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({

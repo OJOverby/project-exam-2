@@ -133,7 +133,7 @@ export function Venues() {
             <label>
               Price range
               <span>
-                {priceRange[0]} - {priceRange[1]} NOK
+                {priceRange[0]} - {priceRange[1]}
               </span>
             </label>
 

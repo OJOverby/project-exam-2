@@ -50,6 +50,7 @@ export function Header() {
           <label htmlFor="header-search" className="srOnly">
             Search venues
           </label>
+
           <input
             id="header-search"
             type="search"
@@ -57,9 +58,10 @@ export function Header() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
+
           <button type="submit" className="searchButton">
             <img src="/svg/search.svg" alt="Search" />
-          </button>{" "}
+          </button>
         </form>
 
         <button
@@ -127,13 +129,18 @@ export function Header() {
                     to={profilePath}
                     onClick={closeMenu}
                   >
-                    <span className="navAvatar" aria-hidden="true">
+                    <span
+                      className="navAvatar profileAvatar"
+                      aria-hidden="true"
+                    >
                       {user.avatar?.url ? (
                         <img src={user.avatar.url} alt="" />
                       ) : (
                         user.name?.charAt(0).toUpperCase()
                       )}
                     </span>
+
+                    <span className="profileText">Profile</span>
                   </NavLink>
                 </li>
               </>

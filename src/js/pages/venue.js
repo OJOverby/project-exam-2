@@ -10,6 +10,7 @@ import { StarSVG } from "../components/svg/star.js";
 import { useAuthStore } from "../store/authStore.js";
 import { getExcludedDates } from "../utils/bookingDates.js";
 import { Loading } from "../components/styled/loading.js";
+import { EmptyState } from "../components/styled/venuesLayout.js";
 
 function Stars({ rating, max = 5 }) {
   const filled = Math.round(Number(rating) || 0);
@@ -46,12 +47,18 @@ export function Venue() {
   if (isLoading) {
     return (
       <Container>
-        <Loading aria-label="Loading venues" role="status">
-          {Array.from({ length: 20 }).map((_, index) => (
-            <span key={index} style={{ "--i": index + 1 }} aria-hidden="true" />
-          ))}
-          <div className="plane" aria-hidden="true" />
-        </Loading>
+        <EmptyState>
+          <Loading aria-label="Loading venues" role="status">
+            {Array.from({ length: 20 }).map((_, index) => (
+              <span
+                key={index}
+                style={{ "--i": index + 1 }}
+                aria-hidden="true"
+              />
+            ))}
+            <div className="plane" aria-hidden="true" />
+          </Loading>
+        </EmptyState>
       </Container>
     );
   }
@@ -121,7 +128,7 @@ export function Venue() {
           </section>
 
           <div className="bookingPanel">
-            <p className="price">{venue?.price} NOK / night</p>
+            <p className="price">{venue?.price} per night</p>
 
             {user ? (
               <Link className="buttonLink" to={`/booking/${venue?.id}`}>

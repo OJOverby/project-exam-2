@@ -1,25 +1,29 @@
 import { Login } from "../api/login.js";
 import { useAuthStore } from "../store/authStore.js";
 
-export function loginHandler(navigate) {
+export function loginHandler(navigate, setError, setIsSubmitting) {
   return async function handleSubmit(event) {
     event.preventDefault();
-    const form = event.target;
+
+    const form = event.currentTarget;
+
     const user = {
-      email: form.email.value,
+      email: form.email.value.trim(),
       password: form.password.value,
     };
+
+    setError("");
+    setIsSubmitting(true);
 
     try {
       const response = await Login(user);
 
-      console.log("Logged in:", response);
-      console.log("venueManager:", response.data.venueManager);
-
       useAuthStore.getState().setAuth(response.data);
       navigate("/");
     } catch (error) {
-      console.error(error);
+      setError("Login failed. Please check your email and password.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 }
