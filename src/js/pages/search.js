@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { useApi } from "../api/useApi.js";
+import { useAllApi } from "../api/useAllApi.js";
 import { Card } from "../components/styled/card.js";
 import { Container } from "../components/styled/container.js";
 import { StarSVG } from "../components/svg/star.js";
@@ -42,7 +42,7 @@ export function Search() {
     return url.toString();
   }, [query]);
 
-  const { data, isLoading, isError } = useApi(searchUrl, 100);
+  const { data, isLoading, isError } = useAllApi(searchUrl, 100);
   const venues = useMemo(() => data?.data ?? [], [data]);
 
   const totalPages = Math.ceil(venues.length / limit) || 1;

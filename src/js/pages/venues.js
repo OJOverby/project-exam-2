@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { Range } from "react-range";
 import { Link } from "react-router-dom";
-import { useApi } from "../api/useApi.js";
+import { useAllApi } from "../api/useAllApi.js";
 import { api } from "../api/api.js";
 import { Card } from "../components/styled/card.js";
 import { Container } from "../components/styled/container.js";
@@ -37,7 +37,7 @@ export function Venues() {
   const [page, setPage] = useState(1);
   const limit = 30;
 
-  const { data, isLoading, isError } = useApi(api, 100);
+  const { data, isLoading, isError } = useAllApi(api, 100);
   const venues = useMemo(() => data?.data ?? [], [data]);
 
   const [minRating, setMinRating] = useState(0);

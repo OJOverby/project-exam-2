@@ -128,7 +128,7 @@ export function Venue() {
           </section>
 
           <div className="bookingPanel">
-            <p className="price">{venue?.price} per night</p>
+            <p className="price">{venue?.price},- per night</p>
 
             {user ? (
               <Link className="buttonLink" to={`/booking/${venue?.id}`}>
