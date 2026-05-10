@@ -31,11 +31,13 @@ const isTrue = (value) =>
 
 const PRICE_MIN = 0;
 const PRICE_MAX = 10000;
-
 const AMENITIES = ["breakfast", "wifi", "pets", "parking"];
 
 export function Venues() {
-  const { data, isLoading, isError } = useApi(api);
+  const [page, setPage] = useState(1);
+  const limit = 30;
+
+  const { data, isLoading, isError } = useApi(api, 100);
   const venues = useMemo(() => data?.data ?? [], [data]);
 
   const [minRating, setMinRating] = useState(0);
@@ -46,6 +48,12 @@ export function Venues() {
     pets: false,
     parking: false,
   });
+
+  const hasActiveFilters =
+    minRating > 0 ||
+    priceRange[0] !== PRICE_MIN ||
+    priceRange[1] !== PRICE_MAX ||
+    AMENITIES.some((key) => amenities[key]);
 
   const filteredVenues = useMemo(() => {
     const [minPrice, maxPrice] = priceRange;
@@ -66,7 +74,33 @@ export function Venues() {
     });
   }, [venues, minRating, priceRange, amenities]);
 
-  const resetFilters = () => {
+  const totalPages = Math.ceil(filteredVenues.length / limit) || 1;
+
+  const paginatedVenues = useMemo(() => {
+    const start = (page - 1) * limit;
+    const end = start + limit;
+
+    return filteredVenues.slice(start, end);
+  }, [filteredVenues, page, limit]);
+
+  function scrollToResultsTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  function goToPreviousPage() {
+    setPage((prev) => Math.max(prev - 1, 1));
+    scrollToResultsTop();
+  }
+
+  function goToNextPage() {
+    setPage((prev) => Math.min(prev + 1, totalPages));
+    scrollToResultsTop();
+  }
+
+  function resetFilters() {
     setMinRating(0);
     setPriceRange([PRICE_MIN, PRICE_MAX]);
     setAmenities({
@@ -75,7 +109,27 @@ export function Venues() {
       pets: false,
       parking: false,
     });
-  };
+    setPage(1);
+    scrollToResultsTop();
+  }
+
+  function updateMinRating(value) {
+    setMinRating(value);
+    setPage(1);
+  }
+
+  function updatePriceRange(values) {
+    setPriceRange(values);
+    setPage(1);
+  }
+
+  function updateAmenity(key, checked) {
+    setAmenities((prev) => ({
+      ...prev,
+      [key]: checked,
+    }));
+    setPage(1);
+  }
 
   if (isLoading) {
     return (
@@ -110,7 +164,10 @@ export function Venues() {
         <FilterPanel aria-label="Venue filters">
           <div className="filterHeader">
             <h1>Venues</h1>
-            <p>{filteredVenues.length} stays found</p>
+            <p>
+              {filteredVenues.length}{" "}
+              {filteredVenues.length === 1 ? "stay" : "stays"} found
+            </p>
           </div>
 
           <div className="filterGroup">
@@ -118,7 +175,9 @@ export function Venues() {
             <select
               id="minimum-rating"
               value={minRating}
-              onChange={(e) => setMinRating(Number(e.target.value))}
+              onChange={(event) =>
+                updateMinRating(Number(event.target.value))
+              }
             >
               <option value={0}>All ratings</option>
               <option value={1}>1+ stars</option>
@@ -133,7 +192,7 @@ export function Venues() {
             <label>
               Price range
               <span>
-                {priceRange[0]} - {priceRange[1]}
+                {priceRange[0]} NOK - {priceRange[1]} NOK
               </span>
             </label>
 
@@ -143,20 +202,25 @@ export function Venues() {
                 min={PRICE_MIN}
                 max={PRICE_MAX}
                 values={priceRange}
-                onChange={setPriceRange}
+                onChange={updatePriceRange}
                 renderTrack={({ props, children }) => (
                   <div {...props} className="rangeTrack" style={props.style}>
                     {children}
                   </div>
                 )}
                 renderThumb={({ props }) => (
-                  <div {...props} className="rangeThumb" style={props.style} />
+                  <div
+                    {...props}
+                    className="rangeThumb"
+                    style={props.style}
+                    aria-label="Price range handle"
+                  />
                 )}
               />
 
               <div className="rangeLabels">
-                <span>{PRICE_MIN}</span>
-                <span>{PRICE_MAX}</span>
+                <span>{PRICE_MIN} NOK</span>
+                <span>{PRICE_MAX} NOK</span>
               </div>
             </div>
           </div>
@@ -169,11 +233,8 @@ export function Venues() {
                 <input
                   type="checkbox"
                   checked={amenities[key]}
-                  onChange={(e) =>
-                    setAmenities((prev) => ({
-                      ...prev,
-                      [key]: e.target.checked,
-                    }))
+                  onChange={(event) =>
+                    updateAmenity(key, event.target.checked)
                   }
                 />
                 {key.charAt(0).toUpperCase() + key.slice(1)}
@@ -181,15 +242,31 @@ export function Venues() {
             ))}
           </fieldset>
 
-          <button className="resetButton" type="button" onClick={resetFilters}>
+          <button
+            className="resetButton"
+            type="button"
+            onClick={resetFilters}
+            disabled={!hasActiveFilters}
+          >
             Reset filters
           </button>
         </FilterPanel>
 
         <section aria-label="Venue results">
-          {filteredVenues.length > 0 ? (
+          <div className="resultsHeader">
+            <div>
+              <h2>Available venues</h2>
+              <p>
+                Showing {paginatedVenues.length}{" "}
+                {paginatedVenues.length === 1 ? "result" : "results"} on page{" "}
+                {page} of {totalPages}
+              </p>
+            </div>
+          </div>
+
+          {paginatedVenues.length > 0 ? (
             <ResultsGrid>
-              {filteredVenues.map((venue) => (
+              {paginatedVenues.map((venue) => (
                 <Card key={venue.id}>
                   <img
                     src={venue.media?.[0]?.url || "/images/placeholder.jpeg"}
@@ -223,9 +300,32 @@ export function Venues() {
             </ResultsGrid>
           ) : (
             <EmptyState>
-              No venues match your filters. Tiny tragedy. Try widening the
-              search.
+              No venues match your filters. Try widening your search.
             </EmptyState>
+          )}
+
+          {filteredVenues.length > limit && (
+            <nav className="pagination" aria-label="Venue pagination">
+              <button
+                type="button"
+                disabled={page === 1 || isLoading}
+                onClick={goToPreviousPage}
+              >
+                Previous page
+              </button>
+
+              <span className="pageStatus" aria-live="polite">
+                Page {page} of {totalPages}
+              </span>
+
+              <button
+                type="button"
+                disabled={isLoading || page >= totalPages}
+                onClick={goToNextPage}
+              >
+                Next page
+              </button>
+            </nav>
           )}
         </section>
       </VenuesLayout>
